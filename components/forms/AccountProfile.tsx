@@ -1,11 +1,12 @@
-"use client"
+"use client";
 
+import * as z from "zod";
 import Image from "next/image";
+import { useForm } from "react-hook-form";
 import { usePathname, useRouter } from "next/navigation";
 import { ChangeEvent, useState } from "react";
-import * as z from "zod";
-import { useForm } from "react-hook-form";
-import React from 'react'
+import { zodResolver } from "@hookform/resolvers/zod";
+
 import {
   Form,
   FormControl,
@@ -14,15 +15,14 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-
-import { zodResolver } from "@hookform/resolvers/zod";
-import { UserValidation } from "@/lib/validations/user";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
 import { useUploadThing } from "@/lib/uploadthing";
 import { isBase64Image } from "@/lib/utils";
+
+import { UserValidation } from "@/lib/validations/user";
 import { updateUser } from "@/lib/actions/user.actions";
 
 interface Props{
@@ -45,7 +45,7 @@ const AccountProfile = ({user, btnTitle}: Props) => {
   const pathname = usePathname();
 
 
-  const form = useForm({
+  const form = useForm<z.infer<typeof UserValidation>>({
     resolver: zodResolver(UserValidation),
     defaultValues: {
       profile_photo: user?.image || '',
@@ -191,6 +191,7 @@ const AccountProfile = ({user, btnTitle}: Props) => {
                   {...field}
                 />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -210,10 +211,13 @@ const AccountProfile = ({user, btnTitle}: Props) => {
                   {...field}
                 />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit" className="bg-primary-500">Submit</Button>
+        <Button type='submit' className='bg-primary-500'>
+          {btnTitle}
+        </Button>
       </form>
     </Form>
   )
